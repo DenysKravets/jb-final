@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Interpol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="/css/common.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body class="d-flex flex-column">
+
+<div class="">
+    <nav class="navbar navbar-expand-lg text-primary-emphasis bg-primary-subtle border border-primary-subtle">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Interpol</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search-convicts">Search Convict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search-criminal-organizations">Search Criminal Organization</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container flex-fill bg-body-tertiary flex-grow-1">
+    <div class="row">
+        <div class="col-3">
+            <form class="ms-2 mb-2" action="/search-convicts" method="POST">
+                <div class="row">
+                    <div class="col-3">
+                        <input class="btn btn-primary mt-3" type="submit" value="Search"/>
+                    </div>
+                    <div class="col-9">
+                        <h5 class="mt-4 ps-2">
+                            For Convicts
+                        </h5>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <br/>
+                    <label class="form-label">
+                        Name
+                        <br/>
+                        <input class="form-control" type="search" id="name" name="name"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Surname
+                        <br/>
+                        <input class="form-control" type="search" id="surname" name="surname"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Alias
+                        <br/>
+                        <input class="form-control" type="search" id="alias" name="alias"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Height
+                        <br/>
+                        <input class="form-control" type="number" step="0.01" id="height" name="height"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        <select name="hairColor" class="form-select" aria-label="Multiple select example">
+                            <option selected value="">Choose hair color</option>
+                            <option th:each="c: ${hairColorList}" th:value="${c.id}" th:text="${c.color}"></option>
+                        </select>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        <select name="eyeColor" class="form-select" aria-label="Multiple select example">
+                            <option selected value="">Choose eye color</option>
+                            <option th:each="c: ${eyeColorList}" th:value="${c.id}" th:text="${c.color}"></option>
+                        </select>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Distinguishing Features
+                        <br/>
+                        <input class="form-control" type="search" id="distinguishingFeatures" name="distinguishingFeatures"/>
+                    </label>
+
+                    <br/>
+                    <label class="form-label">
+                        <select name="citizenship" class="form-select" aria-label="Multiple select example">
+                            <option selected value="">Choose citizenship</option>
+                            <option th:each="c: ${countryList}" th:value="${c.id}" th:text="${c.country}"></option>
+                        </select>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Place and time of birth
+                        <br/>
+                        <input class="form-control" type="search" id="placeAndTimeOfBirth" name="placeAndTimeOfBirth"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Last place of habitat
+                        <br/>
+                        <input class="form-control" type="search" id="lastPlaceOfHabitat" name="lastPlaceOfHabitat"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        <select name="languages" class="form-select" multiple aria-label="Multiple select example">
+                            <option selected value="">Choose languages</option>
+                            <option th:each="l: ${languageList}" th:value="${l.id}" th:text="${l.language}"></option>
+                        </select>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Criminal specialization
+                        <br/>
+                        <input class="form-control" type="search" id="criminalSpecialization" name="criminalSpecialization"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Last criminal case
+                        <br/>
+                        <input class="form-control" type="search" id="lastCriminalCase" name="lastCriminalCase"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+                        Search Criminal Organizations
+                        <br/>
+                        <input class="search-criminal-organizations-name form-control" type="search"/>
+                    </label>
+                    <label class="form-label">
+                        <input class="search-criminal-organizations btn btn-primary mt-3" type="button" value="Search"/>
+                    </label>
+                    <br/>
+                    <label class="form-label">
+
+                        <select name="criminalOrganization"
+                                class="criminal-organization-select selectpicker form-select"
+                                multiple
+                                aria-label="Multiple select example">
+
+                            <option selected value="">Choose criminal organizations</option>
+
+                        </select>
+                    </label>
+                    <br/>
+                </div>
+            </form>
+        </div>
+        <div class="col-9">
+            <ul class="list-group m-3">
+                <li th:each="convict: ${convicts}" class="list-group-item">
+                    <div class="">
+                        <div class="row">
+                            <h5 class="" th:text="${convict.name} + ' ' + ${convict.surname}"></h5>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <h6 class="col">Name</h6>
+                                <p class="col" th:text="${convict.name}">
+                                    Jack
+                                </p>
+                            </div>
+                            <div class="col">
+                                <h6 class="col">Surname</h6>
+                                <p class="col" th:text="${convict.surname}">
+                                    Bowley
+                                </p>
+                            </div>
+                            <div class="col">
+                                <h6 class="col">Alias</h6>
+                                <p class="col" th:text="${convict.alias}">
+                                    Tiny Anvil
+                                </p>
+                            </div>
+                            <div class="col">
+                                <h6 class="col">Height</h6>
+                                <p class="col" th:text="${convict.height}">
+                                    1.83cm
+                                </p>
+                            </div>
+                            <div class="col">
+                                <h6 class="col">Hair Color</h6>
+                                <p class="col" th:text="${convict.hairColor.color}">
+                                    Blond
+                                </p>
+                            </div>
+                            <div class="col">
+                                <h6 class="col">Eye Color</h6>
+                                <p class="col" th:text="${convict.eyeColor.color}">
+                                    Amber
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row ps-2 pe-2 pb-1">
+                            <a th:href="@{/convict(id=${convict.Id})}" class="btn btn-secondary">More info</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer class=" text-center text-lg-start text-dark" style="background-color: #ECEFF1">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+        © 2023 Copyright:
+        <a class="text-dark" href="http://interpol.com/">interpol.com</a>
+    </div>
+</footer>
+
+<script>
+
+    function createOption(id, name) {
+        let option = document.createElement("option");
+        option.value = id;
+        option.text = name;
+        option.classList.add("search-criminal-organizations-option");
+        return option;
+    }
+
+    function deleteOptions() {
+        let options = $( ".search-criminal-organizations-option" );
+        for (let i = 0; i < options.length; i++) {
+            let option = options[i];
+            option.remove();
+        }
+    }
+
+    function searchOrganizations(name) {
+        $.post( window.location.origin + "/api/search-criminal-organizations", "name=" + name, function(data ) {
+
+            deleteOptions();
+            let select = $( ".criminal-organization-select" )[0];
+            for (let i = 0; i < data.length; i++) {
+                let crimeOrg = data[i];
+                select.append(createOption(crimeOrg.id, crimeOrg.name));
+            }
+        }, "json");
+    }
+
+    $( ".search-criminal-organizations" ).on( "click", function() {
+        let name = $( ".search-criminal-organizations-name" )[0].value;
+        searchOrganizations(name);
+    } );
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
