@@ -108,13 +108,6 @@ public class ConvictQueryFactory extends AbstractQueryFactory<Convict>{
         stringBuilder.append(" WHERE ");
         stringBuilder.append(String.join(" AND ", conditions));
 
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println(stringBuilder);
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println("############");
     }
 
     /*

@@ -20,6 +20,21 @@ public class CriminalOrganization {
     private List<Convict> convict;
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CriminalOrganization crimeOrg1 = (CriminalOrganization) o;
+
+        return crimeOrg1.getId().equals(this.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return  id != null ? id.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "CriminalOrganization{" +
                 "\n\tid : " + id +

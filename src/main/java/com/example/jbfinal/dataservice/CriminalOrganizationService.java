@@ -29,10 +29,6 @@ public class CriminalOrganizationService {
         return criminalOrganizationRepository.findById(id).orElse(null);
     }
 
-    public Iterable<CriminalOrganization> getAllCriminalOrganizations() {
-        return criminalOrganizationRepository.findAll();
-    }
-
     public List<CriminalOrganizationResponseEntity> getCriminalOrganizationResponseEntities(String form) {
 
         return this.getCriminalOrganizations(form)

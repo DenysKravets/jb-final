@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -137,6 +138,21 @@ public class Convict {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Convict convict = (Convict) o;
+
+        return convict.getId().equals(this.Id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Id != null ? Id.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "Convict{" +
                 "\n\tId : " + Id +
@@ -155,7 +171,7 @@ public class Convict {
                 "\n\tlastCriminalCase : '" + lastCriminalCase + '\'' +
                 "\n\tcriminalOrganization : " + criminalOrganization +
                 // Replace accomplice toString method with id in order
-                // to not to run into a console output lock
+                // to not run into a console output lock
                 "\n\taccomplices : " + accomplices
                 .stream()
                 .map(acc -> Long.toString(acc.getId()))

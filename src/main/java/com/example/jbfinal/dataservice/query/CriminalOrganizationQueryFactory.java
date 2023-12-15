@@ -39,14 +39,6 @@ public class CriminalOrganizationQueryFactory extends AbstractQueryFactory<Crimi
         stringBuilder.append(" WHERE ");
         stringBuilder.append(String.join(" AND ", conditions));
 
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println(stringBuilder);
-        System.out.println("############");
-        System.out.println("############");
-        System.out.println("############");
-
     }
 
 }

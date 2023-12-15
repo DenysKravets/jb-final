@@ -31,15 +31,12 @@ public class MainController {
         model.addAttribute("eyeColorList", eyeColorRepository.findAll());
         model.addAttribute("countryList", countryRepository.findAll());
         model.addAttribute("languageList", languageRepository.findAll());
-        model.addAttribute("criminalOrganizationList",
-                criminalOrganizationService.getAllCriminalOrganizations());
 
         return "search_convicts";
     }
 
     @PostMapping("/search-convicts")
     public String searchConvicts(@RequestBody String body, Model model) {
-        System.out.println(body);
 
         model.addAttribute("convicts", convictService.getConvicts(body));
 
@@ -47,10 +44,6 @@ public class MainController {
         model.addAttribute("eyeColorList", eyeColorRepository.findAll());
         model.addAttribute("countryList", countryRepository.findAll());
         model.addAttribute("languageList", languageRepository.findAll());
-        model.addAttribute("criminalOrganizationList",
-                criminalOrganizationService.getAllCriminalOrganizations());
-
-        System.out.println(model.asMap());
 
         return "search_convicts";
     }
@@ -58,7 +51,6 @@ public class MainController {
     @GetMapping("/convict")
     public String convict(@RequestParam("id") Long id, Model model) {
 
-        System.out.println(id);
 
         model.addAttribute("convict", convictService.getConvictById(id));
 
@@ -83,11 +75,7 @@ public class MainController {
     @GetMapping("/criminal-organization")
     public String criminalOrganization(@RequestParam("id") Long id, Model model) {
 
-        System.out.println(id);
-
         model.addAttribute("criminalOrg", criminalOrganizationService.getCriminalOrganizationById(id));
-
-        System.out.println(model.asMap());
 
         return "criminal_organization";
     }

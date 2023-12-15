@@ -5,12 +5,12 @@ import com.example.jbfinal.dataservice.query.ConvictQueryFactory;
 import com.example.jbfinal.dataservice.query.Query;
 import com.example.jbfinal.parser.FormParser;
 import com.example.jbfinal.repository.*;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +19,7 @@ import java.util.Map;
 public class ConvictService {
 
     private final ConvictRepository convictRepository;
+
     private final CountryRepository countryRepository;
     private final CriminalOrganizationRepository criminalOrganizationRepository;
     private final EyeColorRepository eyeColorRepository;
@@ -48,226 +49,115 @@ public class ConvictService {
         ).getResultList();
     }
 
-    @PostConstruct
-    public void createTestData() {
+    public Convict createConvict(
+            String name,
+            String surname,
+            String alias,
+            double height,
+            String hairColor,
+            String eyeColor,
+            String distinguishingFeatures,
+            String citizenship,
+            String placeAndTimeOfBirth,
+            String lastPlaceOfHabitat,
+            String languages,
+            String criminalSpecialization,
+            String lastCriminalCase,
+            String criminalOrganization
+    ) {
 
-        createTestAuxiliaryData();
-        createTestConvicts();
-    }
+        // Poll all relevant data entries, inform if not present
 
-    private void createTestAuxiliaryData() {
+        // To lowercase
+        hairColor = hairColor.toLowerCase();
+        HairColor hairColorObject = hairColorRepository.findByColor(hairColor);
+        if (hairColorObject == null)
+            throw new RuntimeException(String.format("Hair color (%s) is not present in database", hairColor));
 
-        // Create a set list of possible hair colors
-        List.of(new String[]{
-                "black",
-                "brown",
-                "blond",
-                "white",
-                "red"
-        }).forEach(this::saveHairColor);
+        // To lowercase
+        eyeColor = eyeColor.toLowerCase();
+        EyeColor eyeColorObject = eyeColorRepository.findByColor(eyeColor);
+        if (eyeColorObject == null)
+            throw new RuntimeException(String.format("Eye color (%s) is not present in database", eyeColor));
 
+        // To lowercase and capitalize
+        citizenship = citizenship.substring(0, 1).toUpperCase() + citizenship.substring(1).toLowerCase();
+        Country countryObject = countryRepository.findByCountry(citizenship);
+        if (countryObject == null)
+            throw new RuntimeException(String.format("Citizenship (%s) is not present in database", citizenship));
 
-        // Create a set list of possible eye colors
-        List.of(new String[]{
-                "amber",
-                "blue",
-                "brown",
-                "gray",
-                "green",
-                "hazel",
-                "red"
-        }).forEach(this::saveEyeColor);
+        // Split and parse languages, ',' is the delimiter
+        List<Language> languageList = Arrays.stream(languages.split(","))
+                .map(String::trim)
+                .map(
+                        // To lowercase and capitalize
+                        language -> language.substring(0, 1).toUpperCase() + language.substring(1).toLowerCase()
+                )
+                .map(language -> {
+                    Language languageObject = languageRepository.findByLanguage(language);
+                    if (languageObject == null)
+                        throw new RuntimeException(
+                                String.format("Language (%s) is not present in database", language)
+                        );
+                    return languageObject;
+                })
+                .toList();
+        if (languageList.size() == 0)
+            throw new RuntimeException("Convict must speak at least one language");
 
-        // Create a set list of possible counties
-        List.of(new String[]{
-                "Japan",
-                "China",
-                "Korea",
-                "Vietnam",
-                "Australia",
-                "Singapore",
-                "Taiwan"
-        }).forEach(this::saveCountry);
+        // Split and parse Criminal Organizations, ',' is the delimiter
+        List<CriminalOrganization> crimeOrgList = Arrays.stream(criminalOrganization.split(","))
+                .map(String::trim)
+                .map(crimeOrg -> {
+                    CriminalOrganization crimeOrgObject = criminalOrganizationRepository.findByName(crimeOrg);
+                    if (crimeOrgObject == null)
+                        throw new RuntimeException(
+                                String.format("Criminal Organization (%s) is not present in database", crimeOrg)
+                        );
+                    return crimeOrgObject;
+                })
+                .toList();
 
-        // Create a set list of possible languages
-        List.of(new String[]{
-                "Japanese",
-                "Chinese",
-                "Korean",
-                "Vietnamese",
-                "English"
-        }).forEach(this::saveLanguage);
-
-        // Create a set list of possible criminal organizations
-        List.of(new String[]{
-                "Jackson Street Boys",
-                "Luen Group",
-                "Big Circle Gang",
-                "Black Dragons",
-                "Celestial Alliance",
-                "Black Tuna Gang",
-                "Pizza Connection"
-        }).forEach(this::saveCriminalOrganization);
-
-    }
-
-    private void saveHairColor(String color) {
-        HairColor hairColor = new HairColor();
-        hairColor.setColor(color);
-        hairColorRepository.save(hairColor);
-    }
-
-    private void saveEyeColor(String color) {
-        EyeColor eyeColor = new EyeColor();
-        eyeColor.setColor(color);
-        eyeColorRepository.save(eyeColor);
-    }
-
-    private void saveCountry(String name) {
-        Country country = new Country();
-        country.setCountry(name);
-        countryRepository.save(country);
-    }
-
-    private void saveLanguage(String name) {
-        Language language = new Language();
-        language.setLanguage(name);
-        languageRepository.save(language);
-    }
-
-    private void saveCriminalOrganization(String name) {
-        CriminalOrganization criminalOrganization = new CriminalOrganization();
-        criminalOrganization.setName(name);
-        criminalOrganizationRepository.save(criminalOrganization);
-    }
-
-    private void createTestConvicts() {
-
-        // Find a way to populate database in an easier way
-
-        // Create Convict 1
-
-        Convict convict1 = new Convict.Builder()
-                .setName("Jack")
-                .setSurname("Bowley")
-                .setAlias("Tiny Anvil")
-                .setHeight(1.83)
-                .setHairColor(hairColorRepository.findById(3L).orElse(null)) // Blond
-                .setEyeColor(eyeColorRepository.findById(1L).orElse(null)) // Amber
-                .setDistinguishingFeatures("right eye is missing")
-                .setCitizenship(countryRepository.findById(6L).orElse(null)) // Singapore
-                .setPlaceAndTimeOfBirth("Singapore 1983")
-                .setLastPlaceOfHabitat("Singapore")
-                .setLanguages(List.of(new Language[]{
-                        languageRepository.findById(5L).orElse(null), // English
-                        languageRepository.findById(2L).orElse(null) // Chinese
-                }))
-                .setCriminalSpecialization("first one to get shot")
-                .setLastCriminalCase("Stole chicken from himself")
-                .setCriminalOrganizations(List.of(new CriminalOrganization[] {
-                        criminalOrganizationRepository.findById(1L).orElse(null) // Jackson Street Boys
-                }))
+        Convict convict = new Convict.Builder()
+                .setName(name)
+                .setSurname(surname)
+                .setAlias(alias)
+                .setHeight(height)
+                .setHairColor(hairColorObject)
+                .setEyeColor(eyeColorObject)
+                .setDistinguishingFeatures(distinguishingFeatures)
+                .setCitizenship(countryObject)
+                .setPlaceAndTimeOfBirth(placeAndTimeOfBirth)
+                .setLastPlaceOfHabitat(lastPlaceOfHabitat)
+                .setLanguages(languageList)
+                .setCriminalSpecialization(criminalSpecialization)
+                .setLastCriminalCase(lastCriminalCase)
+                .setCriminalOrganizations(crimeOrgList)
                 .build();
 
-        convictRepository.save(convict1);
-        convict1 = convictRepository.findById(1L).orElse(null);
-        CriminalOrganization criminalOrganization = criminalOrganizationRepository.findById(1L).orElse(null);
-        criminalOrganization.getConvict().add(convict1);
-        criminalOrganizationRepository.save(criminalOrganization);
+        // Save convict, find by name and surname, connect to crime organizations
+        convictRepository.save(convict);
 
+        convict = convictRepository.findByNameAndSurname(name, surname);
 
+        final Convict finalConvict = convict;
+        crimeOrgList.forEach(crimeOrg -> {
+            crimeOrg.getConvict().add(finalConvict);
+            criminalOrganizationRepository.save(crimeOrg);
+        });
 
-        // Create Convict 2
-
-        Convict convict2 = new Convict.Builder()
-                .setName("Ting")
-                .setSurname("Yuan")
-                .setAlias("Fist of Han")
-                .setHeight(1.75)
-                .setHairColor(hairColorRepository.findById(1L).orElse(null)) // Black
-                .setEyeColor(eyeColorRepository.findById(3L).orElse(null)) // Brown
-                .setDistinguishingFeatures("tattoo of blue moon")
-                .setCitizenship(countryRepository.findById(2L).orElse(null)) // Shenzhen
-                .setPlaceAndTimeOfBirth("Shenzhen 1991")
-                .setLastPlaceOfHabitat("Shenzhen")
-                .setLanguages(List.of(new Language[]{
-                        languageRepository.findById(2L).orElse(null) // Chinese
-                }))
-                .setCriminalSpecialization("cook")
-                .setLastCriminalCase("Forgot who Mao is")
-                .setCriminalOrganizations(List.of(new CriminalOrganization[] {
-                        criminalOrganizationRepository.findById(1L).orElse(null), // Jackson Street Boys
-                        criminalOrganizationRepository.findById(2L).orElse(null) // Luen Group
-                }))
-                .build();
-
-
-        convictRepository.save(convict2);
-        convict2 = convictRepository.findById(2L).orElse(null);
-        criminalOrganization = criminalOrganizationRepository.findById(1L).orElse(null);
-        criminalOrganization.getConvict().add(convict2);
-        criminalOrganizationRepository.save(criminalOrganization);
-
-        criminalOrganization = criminalOrganizationRepository.findById(2L).orElse(null);
-        criminalOrganization.getConvict().add(convict2);
-        criminalOrganizationRepository.save(criminalOrganization);
-
-        // Connect Convict 1 with 2
-
-        convict1 = convictRepository.findById(1L).orElse(null);
-        convict2 = convictRepository.findById(2L).orElse(null);
-        assert convict1 != null;
-        assert convict2 != null;
-        putConvictsInCahoots(convict1, convict2);
-
-        // Create Convict 3
-
-        convict1 = new Convict.Builder()
-                .setName("Li")
-                .setSurname("Shi")
-                .setAlias("Chin")
-                .setHeight(1.69)
-                .setHairColor(hairColorRepository.findById(4L).orElse(null)) // White
-                .setEyeColor(eyeColorRepository.findById(7L).orElse(null)) // Red
-                .setDistinguishingFeatures("very small ears")
-                .setCitizenship(countryRepository.findById(4L).orElse(null)) // Vietnam
-                .setPlaceAndTimeOfBirth("Hanoi 1971")
-                .setLastPlaceOfHabitat("Hanoi")
-                .setLanguages(List.of(new Language[]{
-                        languageRepository.findById(4L).orElse(null) // Vietnamese
-                }))
-                .setCriminalSpecialization("crime engagement server")
-                .setLastCriminalCase("disarmed robbery")
-                .setCriminalOrganizations(List.of(new CriminalOrganization[] {
-                        criminalOrganizationRepository.findById(6L).orElse(null) // Black Tuna Gang
-                }))
-                .build();
-
-        convictRepository.save(convict1);
-        convict1 = convictRepository.findById(3L).orElse(null);
-        criminalOrganization = criminalOrganizationRepository.findById(6L).orElse(null);
-        criminalOrganization.getConvict().add(convict1);
-        criminalOrganizationRepository.save(criminalOrganization);
-
-        // Connect Convict 2 with 3
-        convict1 = convictRepository.findById(2L).orElse(null);
-        convict2 = convictRepository.findById(3L).orElse(null);
-        assert convict1 != null;
-        assert convict2 != null;
-        putConvictsInCahoots(convict1, convict2);
-
-        // Show results
-        System.out.println();
-        System.out.println(convictRepository.findById(1L).orElse(null));
-        System.out.println();
-        System.out.println(convictRepository.findById(2L).orElse(null));
-        System.out.println();
-        System.out.println(convictRepository.findById(3L).orElse(null));
-        System.out.println();
-
+        return convict;
     }
 
-    private void putConvictsInCahoots(Convict convict1, Convict convict2) {
+    public void putConvictsInCahoots(Convict convict1, Convict convict2) {
+
+        // Don't add convict to itself
+        if (convict1.getId().equals(convict2.getId()))
+            return;
+
+        // Adding same accomplices will create faulty logic
+        if (convict1.getAccomplices().contains(convict2) || convict2.getAccomplices().contains(convict1))
+            return;
 
         long id1 = convict1.getId();
         long id2 = convict2.getId();
