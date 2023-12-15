@@ -35,6 +35,38 @@ public class ConvictService {
         return convictRepository.findById(id).orElse(null);
     }
 
+    public void putInJail(Long id) {
+        Convict convict = convictRepository.findById(id).orElse(null);
+        assert convict != null;
+        convict.setCaught(true);
+        convictRepository.save(convict);
+    }
+
+    public void deleteIfDead(Long id) {
+        Convict convict = convictRepository.findById(id).orElse(null);
+        assert convict != null;
+        // Delete only if dead
+        if (convict.getDead())
+            delete(convict);
+    }
+
+    private void delete(Convict convict) {
+
+        // Remove accomplice connections
+        convict.getAccomplices().forEach(acc -> {
+            acc.getAccomplices().removeIf(possibleConnection -> possibleConnection.equals(convict));
+            convictRepository.save(acc);
+        });
+
+        // Remove criminal organization connections
+        convict.getCriminalOrganization().forEach(co -> {
+            co.getConvict().removeIf(possibleConnection -> possibleConnection.equals(convict));
+            criminalOrganizationRepository.save(co);
+        });
+
+        convictRepository.delete(convict);
+    }
+
     @SuppressWarnings("unchecked")
     public List<Convict> getConvicts(String form) {
 
@@ -47,6 +79,36 @@ public class ConvictService {
                 convictQuery.getString(),
                 convictQuery.queriesClass()
         ).getResultList();
+    }
+
+    // Overloaded method including caught and dead
+    public Convict createConvict(
+            String name,
+            String surname,
+            String alias,
+            double height,
+            String hairColor,
+            String eyeColor,
+            String distinguishingFeatures,
+            String citizenship,
+            String placeAndTimeOfBirth,
+            String lastPlaceOfHabitat,
+            String languages,
+            String criminalSpecialization,
+            String lastCriminalCase,
+            String criminalOrganization,
+            boolean caught,
+            boolean dead
+    ) {
+        Convict convict = createConvict(
+                name, surname, alias, height, hairColor, eyeColor, distinguishingFeatures,
+                citizenship, placeAndTimeOfBirth, lastPlaceOfHabitat, languages,
+                criminalSpecialization, lastCriminalCase, criminalOrganization
+        );
+        convict.setCaught(caught);
+        convict.setDead(dead);
+        convictRepository.save(convict);
+        return convictRepository.findById(convict.getId()).orElse(null);
     }
 
     public Convict createConvict(
@@ -133,6 +195,8 @@ public class ConvictService {
                 .setCriminalSpecialization(criminalSpecialization)
                 .setLastCriminalCase(lastCriminalCase)
                 .setCriminalOrganizations(crimeOrgList)
+                .setCaught(false)
+                .setDead(false)
                 .build();
 
         // Save convict, find by name and surname, connect to crime organizations

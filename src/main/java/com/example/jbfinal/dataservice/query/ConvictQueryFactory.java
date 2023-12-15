@@ -97,6 +97,24 @@ public class ConvictQueryFactory extends AbstractQueryFactory<Convict>{
             conditions.add(createCriminalOrganizationCondition(criminalOrganization));
         }
 
+        if (parameters.containsKey("caught")) {
+            String caught = parameters.get("caught");
+            if (caught.equalsIgnoreCase("true"))
+                caught = "1";
+            else
+                caught = "0";
+            conditions.add(String.format("c.caught = %s", caught)); //
+        }
+
+        if (parameters.containsKey("dead")) {
+            String dead = parameters.get("dead");
+            if (dead.equalsIgnoreCase("true"))
+                dead = "1";
+            else
+                dead = "0";
+            conditions.add(String.format("c.dead = %s", dead)); //
+        }
+
         stringBuilder.append("SELECT * FROM convict AS c");
 
         // If no conditions present select all entries

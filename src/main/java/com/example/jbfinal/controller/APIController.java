@@ -1,12 +1,11 @@
 package com.example.jbfinal.controller;
 
 
+import com.example.jbfinal.dataservice.ConvictService;
 import com.example.jbfinal.dataservice.CriminalOrganizationService;
 import com.example.jbfinal.response.entity.CriminalOrganizationResponseEntity;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

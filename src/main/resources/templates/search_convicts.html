@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/search-criminal-organizations">Search Criminal Organization</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archive">Archive</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -136,6 +139,7 @@
                         <input class="search-criminal-organizations btn btn-primary mt-3" type="button" value="Search"/>
                     </label>
                     <br/>
+                    <input class="" type="hidden" name="caught" value="false"/>
                     <label class="form-label">
 
                         <select name="criminalOrganization"
@@ -145,6 +149,18 @@
 
                             <option selected value="">Choose criminal organizations</option>
 
+                        </select>
+                    </label>
+                    <label class="form-label">
+
+                        <select name="dead"
+                                class="criminal-organization-select selectpicker form-select"
+                                multiple
+                                aria-label="Multiple select example">
+
+                            <option selected value="">Dead</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
                         </select>
                     </label>
                     <br/>

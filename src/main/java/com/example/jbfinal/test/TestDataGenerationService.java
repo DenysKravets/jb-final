@@ -112,7 +112,7 @@ public class TestDataGenerationService {
 
     private void createTestConvicts() throws Exception {
 
-        final int MAX_NUMBER_OF_CONVICTS = 5;
+        final int MAX_NUMBER_OF_CONVICTS = 50;
 
         List<List<String>> records = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader("MOCK_DATA.csv"))) {
@@ -149,12 +149,18 @@ public class TestDataGenerationService {
                             generateRandomListOfLanguages(listOfAllLanguages),
                             line.get(11).trim(),
                             line.get(12).trim(),
-                            generateRandomListOfCriminalOrganizations(listOfAllCriminalOrgs)
+                            generateRandomListOfCriminalOrganizations(listOfAllCriminalOrgs),
+                            false,
+                            generateDeadOrAlive()
                      )
                 )
                 .toList();
 
         generateAccomplicesRandomly(createdConvicts);
+    }
+
+    private boolean generateDeadOrAlive() {
+        return Math.random() > 0.75;
     }
 
     private void generateAccomplicesRandomly(List<Convict> convictList) {

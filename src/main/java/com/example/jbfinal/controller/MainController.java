@@ -80,4 +80,40 @@ public class MainController {
         return "criminal_organization";
     }
 
+    @GetMapping("/archive")
+    public String archive(Model model) {
+
+        model.addAttribute("hairColorList", hairColorRepository.findAll());
+        model.addAttribute("eyeColorList", eyeColorRepository.findAll());
+        model.addAttribute("countryList", countryRepository.findAll());
+        model.addAttribute("languageList", languageRepository.findAll());
+
+        return "archive";
+    }
+
+    @PostMapping("/archive")
+    public String archive(@RequestBody String body, Model model) {
+
+        model.addAttribute("convicts", convictService.getConvicts(body));
+
+        model.addAttribute("hairColorList", hairColorRepository.findAll());
+        model.addAttribute("eyeColorList", eyeColorRepository.findAll());
+        model.addAttribute("countryList", countryRepository.findAll());
+        model.addAttribute("languageList", languageRepository.findAll());
+
+        return "archive";
+    }
+
+    @GetMapping("/caught")
+    public String caught(@RequestParam Long id) {
+        convictService.putInJail(id);
+        return "archive";
+    }
+
+    @GetMapping("/delete")
+    public String delete(@RequestParam Long id) {
+        convictService.deleteIfDead(id);
+        return "search_convicts";
+    }
+
 }

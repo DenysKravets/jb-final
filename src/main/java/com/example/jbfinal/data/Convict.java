@@ -37,6 +37,8 @@ public class Convict {
     private List<CriminalOrganization> criminalOrganization;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Convict> accomplices;
+    private Boolean caught;
+    private Boolean dead;
 
     public static class Builder {
 
@@ -127,6 +129,16 @@ public class Convict {
             return this;
         }
 
+        public Builder setCaught(Boolean caught) {
+            convict.caught = caught;
+            return this;
+        }
+
+        public Builder setDead(Boolean dead) {
+            convict.dead = dead;
+            return this;
+        }
+
         public Convict build() {
             return convict;
         }
@@ -178,4 +190,5 @@ public class Convict {
                 .reduce("'ids:", (a1, a2) -> a1 + " " + a2) + '\'' +
                 "\n}";
     }
+
 }
